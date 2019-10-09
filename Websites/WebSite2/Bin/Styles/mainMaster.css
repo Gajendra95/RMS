@@ -1,0 +1,128 @@
+﻿#datepicker
+{
+	display:none;
+	position:absolute;
+	border:solid 2px Black;
+	background-color:White;
+}
+
+
+.mandatory
+{
+   color:Red; 
+}
+
+.leftColumn
+{
+	float:left;
+	
+	width:98%;
+	
+	
+}
+
+.rightColumn
+{
+	float:right;
+	
+	width:83%;
+}
+
+.footer
+ { position:fixed;
+   bottom:0;
+   width:100%;
+   color:#CCCCCC;
+   font-weight:bold;
+   height:25px;   /* Height of the footer */
+  
+}
+.content
+{
+	margin:auto;
+	width:100%;
+}
+.clear
+{
+	clear:both;
+}
+/*Gridvie
+-------------------------------------------------------*/
+.GridViewEditRow input[type=text] {width:50px;}
+.GridViewEditRoww input[type=text] {width:90px;}
+.GridViewEditRowww input[type=text] {width:100px;}
+.GridViewEditRow select {width:50px;}
+/* TAB MENU   
+----------------------------------------------------------*/
+
+div.hideSkiplink
+{
+    background-color:#3a4f63;
+   /* width:100%;*/
+}
+
+div.menu
+{
+    padding: 4px 0px 4px 8px;
+    font-weight:bold;
+}
+
+div.menu ul
+{
+    list-style: none;
+    margin: 0px;
+    padding: 0px;
+    width: auto;
+}
+
+div.menu ul li a, div.menu ul li a:visited
+{
+    background-color: #993300;
+    border: 1px #4e667d solid;
+    color: #dde4ec;
+   /* display: block;*/
+    line-height: 1.35em;
+    padding: 4px 4px;
+    text-decoration: none;
+    white-space:nowrap;
+}
+
+div.menu ul li a:hover
+{
+    background-color: #FFAC30;
+    color: #4C0000;
+    text-decoration:none;
+}
+
+div.menu ul li a:active
+{
+    background-color: #465c71;
+    color: #0066FF;
+    text-decoration: none;
+}
+
+
+div.printable { display: none; }
+@media print
+ {
+     #nonprintable { display: none; }
+     #printable { display: block; }
+ } 
+ 
+ 
+ .button_add {
+    background-image: url(~/Images/search.jpg); /* 16px x 16px */
+    background-color: transparent; /* make the button transparent */
+    background-repeat: no-repeat;  /* make the background image appear only once */
+    background-position: 0px 0px;  /* equivalent to 'top left' */
+    border: none;           /* assuming we don't want any borders */
+    cursor: pointer;        /* make the cursor like hovering over an <a> element */
+    height: 80px;           /* make this the size of your image */
+    padding-left: 46px;     /* make text start to the right of the image */
+    vertical-align: middle; /* align the text vertically centered */
+}
+
+.button {
+  background-image: url ('~/Images/search.png') no-repeat;
+  cursor:pointer;
+  }

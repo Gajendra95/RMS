@@ -1,0 +1,1361 @@
+﻿<%@ Page Title="" Language="C#" MasterPageFile="~/MasterPage/MasterPageRMS.master" AutoEventWireup="true" CodeFile="PublictionViewEdit.aspx.cs" Inherits="PublicationEntry_PublictionViewEdit" %>
+<%@ Register Assembly="AjaxControlToolkit" Namespace="AjaxControlToolkit" TagPrefix="asp" %>
+<asp:Content ID="Content1" ContentPlaceHolderID="ContentPlaceHolder1" Runat="Server">
+     <asp:ValidationSummary ID="ValidationSummary1" runat="server" ShowMessageBox="True" DisplayMode="BulletList" 
+     HeaderText="Validation issues" ShowSummary="False" ValidationGroup="validation" />
+
+<center>
+
+
+  <style type="text/css">
+.modelBackground
+{
+	background-color:Gray;
+	filter:alpha(opacity=70);
+	opacity:0.7;
+}
+
+.modelPopup
+{
+	background-color:#EEEEE;
+	border-width:3px;
+	border-style:solid;
+	border-color:Gray;
+	font-family:Verdana;
+	font-size:medium;
+	padding:3px;
+	width:450px;
+	position:absolute;
+	overflow:scroll;
+	max-height:400px;
+}
+
+.blnkImgCSS
+{
+	opacity: 0;
+	filter: alpha(opacity=0);
+}
+
+</style>
+ <script type = "text/javascript">
+     function AddConfirm() {
+         var rid = document.getElementById('<%= TextBoxPubId.ClientID %>').value;
+
+         var confirm_value2 = document.createElement("INPUT");
+         confirm_value2.type = "hidden";
+         confirm_value2.name = "confirm_value2";
+         confirm_value2.value = "Yes";
+
+         if (rid != "") {
+             if (confirm("Data Will be lost. Do you want to continue?"))
+                 confirm_value2.value = "Yes";
+             else
+                 confirm_value2.value = "No";
+         }
+
+         document.forms[0].appendChild(confirm_value2);
+     }
+    </script>
+
+
+
+   <script type = "text/javascript">
+
+       function setRow(obj) {
+
+           var row = obj.parentNode.parentNode;
+           var rowIndex = row.rowIndex - 1;
+
+
+           var sndID = obj.id;
+           var sndrID = document.getElementById('<%= senderID.ClientID %>');
+           sndrID.value = sndID;
+
+           var rowNo = document.getElementById('<%= rowVal.ClientID %>');
+           rowNo.value = rowIndex;
+
+       }
+    </script>
+            <asp:ToolkitScriptManager ID="Scriptmanager1" runat="server"/>
+
+            <asp:Label ID="lablPanelTitle" runat="server" Text="Journal View" Font-Bold="true" ></asp:Label>
+            <br />
+             <br /> <br />
+            <asp:Panel ID="panelSearchPub" runat="server" GroupingText="Search" Visible="true" Font-Bold="true" Style="background-color:#E0EBAD"> 
+                <br />
+            <table >
+            <tr><td><asp:Label ID="Label2" runat="server" Text="Publication Type: " Font-Bold="true" ></asp:Label></td>
+            <td><asp:RadioButtonList RepeatDirection="Horizontal" runat="server" ID="ChkTypeOfPublication" AutoPostBack="true" OnSelectedIndexChanged="PublicationTypeChanged">
+             <asp:ListItem Value="N">FacultyAuthored-Pulication</asp:ListItem>
+            <asp:ListItem Value="Y">StudentAuthored-Publication</asp:ListItem>
+            </asp:RadioButtonList></td></tr>
+            </table>
+            <br />
+                 <table border="1" id="table" runat="server" Visible="false" style="width: 100%">
+                    <tr>
+                        <td style="height: 36px">
+                            <b>Publication Entry Type:</b></td>
+                        <td style="height: 36px">             
+                            <asp:DropDownList ID="EntryTypesearch" Width="200px" runat="server" 
+                             DataSourceID="SqlDataSource4" DataTextField="EntryName" AutoPostBack="true" OnTextChanged="EntryTypesearchTextChange" DataValueField="TypeEntryId" AppendDataBoundItems="true">
+                          </asp:DropDownList> 
+            <asp:SqlDataSource ID="SqlDataSource4" runat="server" 
+                ConnectionString="<%$ ConnectionStrings:RMSConnectionString %>" 
+                
+                SelectCommand="select TypeEntryId,EntryName from PublicationTypeEntry_M where TypeEntryId='JA'" 
+                ProviderName="System.Data.SqlClient">
+             
+            </asp:SqlDataSource>
+                       
+                         </td>
+                      
+                        <td style="height: 36px">
+                            <b>Publication ID </b>
+                        </td>
+                        <td style="height: 36px">
+                          <asp:TextBox ID="PubIDSearch" Width="215px" runat="server" ></asp:TextBox>
+                        </td>
+
+                 <td style="height: 36px">
+                            <b>Publication Status</b></td>
+                        <td style="height: 36px">             
+                            <asp:DropDownList ID="drpPubStatusSearch" runat="server"   DataSourceID="SqlDataSource2" DataTextField="StatusName" DataValueField="StatusId" AppendDataBoundItems="true">
+             <asp:ListItem Value="A">ALL</asp:ListItem>
+                           
+                          </asp:DropDownList> 
+        <asp:SqlDataSource ID="SqlDataSource2" runat="server" 
+                ConnectionString="<%$ ConnectionStrings:RMSConnectionString %>" 
+                
+                SelectCommand=" select StatusId,StatusName from Status_Publication_M" 
+                ProviderName="System.Data.SqlClient">
+             
+            </asp:SqlDataSource>
+                       
+                         </td>
+                 
+                   
+                      
+       </tr>
+
+       <tr>
+       
+           <td style="height: 36px; font-weight:normal; color:Black">
+               <b>Title</b>
+           </td>
+           <td colspan="3" style="height: 36px">
+               <asp:TextBox ID="TextBoxWorkItemSearch" runat="server" 
+                   Style="border-style:inset none none inset;" Width="560px"></asp:TextBox>
+           </td>
+           <td style="height: 36px; font-weight:normal; color:Black">
+               <b>Entered By</b>
+           </td>
+           <td style="height: 36px">
+               <asp:TextBox ID="TextBoxEnteredBySearch" runat="server" 
+                   Style="border-style:inset none none inset;" Width="180px"></asp:TextBox>
+           </td></tr>
+                     <tr>
+                         <td style="height: 36px; font-weight:normal; color:Black">
+                             <b>Institute</b>
+                         </td>
+                         <td style="height: 36px">
+                             <asp:DropDownList ID="DropDownListInst" runat="server" 
+                                 AppendDataBoundItems="true" AutoPostBack="true" 
+                                 DataSourceID="SqlDataSourceInst" DataTextField="Institute_Name" 
+                                 DataValueField="Institute_Id" 
+                                 OnSelectedIndexChanged="DropDownListInstOnSelectedIndexChanged" 
+                                 Style="border-style:inset none none inset;">
+                                 <asp:ListItem Value="A">ALL</asp:ListItem>
+                             </asp:DropDownList>
+                             <asp:SqlDataSource ID="SqlDataSourceInst" runat="server" 
+                                 ConnectionString="<%$ ConnectionStrings:RMSConnectionString %>" 
+                                 SelectCommand="select Institute_Id,Institute_Name from Institute_M ">
+                             </asp:SqlDataSource>
+                         </td>
+                         <td style="height: 36px; font-weight:normal; color:Black">
+                             <b>Department</b>
+                         </td>
+                         <td style="height: 36px">
+                             <asp:DropDownList ID="DropDownListDept" runat="server" 
+                                 AppendDataBoundItems="true" DataSourceID="SqlDataSourceDept" 
+                                 DataTextField="DeptName" DataValueField="DeptId" 
+                                 Style="border-style:inset none none inset;">
+                                 <asp:ListItem Value="A">ALL</asp:ListItem>
+                             </asp:DropDownList>
+                             <asp:SqlDataSource ID="SqlDataSourceDept" runat="server" 
+                                 ConnectionString="<%$ ConnectionStrings:RMSConnectionString %>" 
+                                 SelectCommand=""></asp:SqlDataSource>
+                         </td>
+                          
+                         <td style="height: 36px">
+                             <b>Indexed</b></td>
+                         <td style="height: 36px; width:200px;">
+                             <asp:DropDownList ID="drpPubIndexSearch" runat="server" 
+                                 onselectedindexchanged="drpPubIndexSearch_SelectedIndexChanged" AutoPostBack="true">
+                                 <asp:ListItem Value="Y">Yes</asp:ListItem>
+                                 <asp:ListItem Value="N">No</asp:ListItem>
+                             </asp:DropDownList>
+                         </td>
+                   </tr>
+                   <tr>
+                         <td style="height: 36px; width:80px" Id="indexed" runat="server">
+                             <b>Indexed In</b></td>
+                         <td style="height: 36px; width:200px;" Id="indexed1" runat="server">
+                             <asp:DropDownList ID="ddlIndexedIn" runat="server" Enabled="true">
+                                 <asp:ListItem Value="A">Both</asp:ListItem>
+                                 <asp:ListItem Value="2">Scopus</asp:ListItem>
+                                 <asp:ListItem Value="4">Web of Science</asp:ListItem>
+                             </asp:DropDownList>
+                         </td>
+                     </tr>
+               
+                     </table>  
+
+                <table style="margin-top:10px;">
+                    <tr>
+                      
+                   <td style="height: 36px; margin-top: 50px;" colspan="6">  
+                              <asp:Button  ID="ButtonSearchPub" Height="30" Width="70"  Visible="false" runat="server" Text="Search" OnClick="ButtonSearchPubOnClick"  />
+                        </td>
+              
+
+                    </tr>
+
+                </table>
+                     </asp:Panel>
+      <br/>        
+
+    <center>
+                        <asp:GridView ID="GridViewSearch" runat="server"  AllowPaging="True" OnPageIndexChanging="GridViewSearchPub_PageIndexChanging" 
+        PagerSettings-PageButtonCount="5" PageSize="10"  EmptyDataText="No Data found"
+        HeaderStyle-BackColor="#CC6600" HeaderStyle-ForeColor="White" AutoGenerateColumns="false"
+        PagerStyle-BackColor="#CC6600" PagerStyle-ForeColor="White" CellPadding="3"  OnRowDataBound="GridView2_RowDataBound" OnRowEditing="edit" OnRowCommand="GridView2_RowCommand"
+        CellSpacing="3" PagerStyle-Width="4" PagerStyle-Height="4" Visible="False" 
+        BorderColor="#FF6600" BorderStyle="Solid">
+        <Columns>
+
+     
+   <asp:TemplateField ShowHeader="False" >
+   <ItemTemplate>
+   <asp:ImageButton ID="BtnEdit" runat="server" CausesValidation="False" CommandName="Edit" ImageUrl="~/Images/view.gif" ToolTip="View"  />
+   </ItemTemplate>
+   </asp:TemplateField>
+        <asp:BoundField DataField="PublicationID" ReadOnly="true" HeaderText="PublicationID" 
+                SortExpression="PublicationID" />
+
+        <%--
+            <asp:BoundField DataField="TypeOfEntry" ReadOnly="true" HeaderText="Type Of Entry" 
+                SortExpression="TypeOfEntry" />--%>
+                  
+                       <asp:BoundField DataField="EntryName" ReadOnly="true" HeaderText="Type Of Entry" 
+                SortExpression="EntryName" />
+                  <asp:BoundField DataField="TitleWorkItem" ReadOnly="true" HeaderText="Title Of Work Item" 
+                SortExpression="TitleWorkItem" />
+                  <asp:BoundField DataField="PubCatName" ReadOnly="true" HeaderText="Category" 
+                SortExpression="PubCatName" />
+                <asp:BoundField DataField="Indexed" ReadOnly="true" HeaderText="Indexed" 
+                SortExpression="Indexed" />
+             <asp:BoundField DataField="AgencyName" ReadOnly="true" HeaderText="Indexed In" 
+                SortExpression="AgencyName" />
+              
+<%--
+                  <asp:BoundField DataField="PubJournalID" ReadOnly="true" HeaderText="PubJournalID" 
+                SortExpression="PubJournalID" />--%>
+<%--  
+            <asp:BoundField DataField="PublishJAMonth" ReadOnly="true" HeaderText="PublishJAMonth" 
+                SortExpression="PublishJAMonth" />
+
+                <asp:BoundField DataField="PublishJAYear" ReadOnly="true" HeaderText="PublishJAYear" 
+                SortExpression="PublishJAYear" />--%>
+    <%--       <asp:BoundField DataField="ImpactFactor" ReadOnly="true" HeaderText="ImpactFactor" 
+                SortExpression="ImpactFactor" />--%>
+                   <asp:BoundField DataField="StatusName" ReadOnly="true" HeaderText="Status" 
+                SortExpression="StatusName" />
+                       <asp:TemplateField ShowHeader="false">
+             <ItemTemplate>
+                 <asp:HiddenField ID="TypeOfEntry" runat="server" Value='<%# Eval("EntryName") %>'></asp:HiddenField>
+                                  
+              
+             
+            </ItemTemplate>            
+        </asp:TemplateField>
+        </Columns>
+
+           <HeaderStyle BackColor="#0b532d" Font-Bold="True" ForeColor="White" />
+        <PagerStyle BackColor="#0b532d" ForeColor="White" HorizontalAlign="Center" />
+        <RowStyle BackColor="#FFFFFF" ForeColor="#333333" />
+        <SelectedRowStyle BackColor="#FFCC66" Font-Bold="True" ForeColor="Navy" />
+        <SortedAscendingCellStyle BackColor="#FDF5AC" />
+        <SortedAscendingHeaderStyle BackColor="#4D0000" />
+        <SortedDescendingCellStyle BackColor="#FCF6C0" />
+        <SortedDescendingHeaderStyle BackColor="#820000" />
+        <EditRowStyle BorderColor="#FF6600" BorderStyle="Solid" />
+
+    </asp:GridView>
+        </center>
+           <asp:SqlDataSource ID="SqlDataSource1" runat="server" 
+         ConnectionString="<%$ ConnectionStrings:RMSConnectionString %>" 
+         SelectCommand=" " >
+        </asp:SqlDataSource>
+
+    <br />
+
+<asp:Panel ID="panel" runat="server" GroupingText=" " BackColor="#E0EBAD"> 
+
+
+ <table border="1" style="width: 100%">
+                    <tr>
+                        <td style="height: 36px">
+                          <asp:Label ID="TypeEntry" runat="server"  Text="Entry Type:" Font-Bold="true"></asp:Label>
+                               
+                               </td>
+                        <td style="height: 36px" colspan="2">             
+                             <asp:DropDownList ID="DropDownListPublicationEntry" runat="server"  DataSourceID="SqlDataSourcePublicationEntry" DataTextField="EntryName" Enabled="false"
+                              DataValueField="TypeEntryId" AppendDataBoundItems="true"  Width="200px" OnSelectedIndexChanged="DropDownListPublicationEntryOnSelectedIndexChanged" AutoPostBack="true">
+                                    <asp:ListItem Value=" ">--Select--</asp:ListItem>
+                    
+                             </asp:DropDownList>
+                             <asp:SqlDataSource ID="SqlDataSourcePublicationEntry" runat="server" 
+                ConnectionString="<%$ ConnectionStrings:RMSConnectionString %>" 
+                
+                SelectCommand="select TypeEntryId,EntryName from PublicationTypeEntry_M" 
+                ProviderName="System.Data.SqlClient">
+           
+            </asp:SqlDataSource>
+                 
+                       
+                         </td>
+                      
+                        <td style="height: 36px" >
+                           <asp:Label ID="lblMUCat" runat="server" Text="MAHE Categorization:" Font-Bold="true"></asp:Label>
+                        </td>
+                        <td style="height: 36px" colspan="2">
+                            <asp:DropDownList ID="DropDownListMuCategory" runat="server"   Width="200px"  DataSourceID="SqlDataSourceMuCategory" DataTextField="PubCatName" Enabled="false"
+                              DataValueField="PubCatId" AppendDataBoundItems="true"  >
+                                    <asp:ListItem Value=" ">--Select--</asp:ListItem>
+                             
+                             </asp:DropDownList>   
+                             
+                                     <asp:SqlDataSource ID="SqlDataSourceMuCategory" runat="server" 
+                ConnectionString="<%$ ConnectionStrings:RMSConnectionString %>" 
+                
+                SelectCommand="select PubCatId,PubCatName from PubMUCategorization_M" 
+                ProviderName="System.Data.SqlClient">
+           
+            </asp:SqlDataSource>  </td>
+
+  <td>
+          <asp:Label ID="LabelPubId" runat="server" Text="PublicationId :" Font-Bold="true" ></asp:Label>
+     </td>
+
+     <td>
+         <asp:TextBox ID="TextBoxPubId" runat="server"   Width="200px" Enabled="false"></asp:TextBox>
+     
+     </td>
+
+                             </tr>
+                             <tr>
+                 <td style="height: 36px">
+                                <asp:Label ID="lblTitileWorkItem" runat="server" Text="Title Of the Work Item:" Font-Bold="true" ></asp:Label></td>
+                        <td style="height: 36px" colspan="7">             
+                       <asp:TextBox ID="txtboxTitleOfWrkItem" runat="server"   Width="900px" TextMode="MultiLine" ReadOnly="true"></asp:TextBox>
+     
+                       
+                         </td>
+                           </tr>
+                       
+                        
+     
+<%--
+                     <tr>
+     <td> <asp:Label ID="LabelCoAuthor" runat="server" Text="Co Author:" Font-Bold="true" ></asp:Label></td> 
+     <td  >
+       <asp:TextBox ID="TextBoxCoAuthor" runat="server"  ></asp:TextBox>
+
+     </td>
+
+      <td> <asp:Label ID="LabelcorrespondingAuthor" runat="server" Text="Corresponding Author:" Font-Bold="true" ></asp:Label></td> 
+     <td colspan="3" >
+       <asp:TextBox ID="TextBoxcorrespondingAuthor" runat="server"  ></asp:TextBox>
+
+     </td>
+
+
+                  </tr>--%>
+               
+                     </table>  
+                     <br />
+
+                     <asp:Panel ID="panAddAuthor" runat="server" GroupingText="Author Details" Visible="false" Font-Bold="true">
+                      
+
+  
+      <br />
+ <asp:SqlDataSource ID="SqlDataSourceAuthorType" runat="server" 
+    ConnectionString="<%$ ConnectionStrings:RMSConnectionString %>" 
+    ProviderName="System.Data.SqlClient"> 
+                                     
+    </asp:SqlDataSource>
+
+<asp:Panel ID="PanelMU" runat="server" ScrollBars="Both" BorderStyle="Double"   Width="1000px" style="margin-right: 0px">
+
+     <asp:GridView ID="Grid_AuthorEntry" runat="server" AutoGenerateColumns="False"  GridLines="None"
+     OnRowDeleting="Grid_AuthorEntry_RowDeleting" OnRowDataBound="OnRowDataBound" CellPadding="4" ForeColor="#333333" Enabled="false">
+
+     <AlternatingRowStyle BackColor="White" />
+
+     <Columns>
+
+
+     
+       <asp:TemplateField HeaderText="MAHE/Non MAHE">
+             <ItemTemplate>
+                 <asp:DropDownList ID="DropdownMuNonMu" runat="server" Width="160" OnSelectedIndexChanged="DropdownMuNonMuOnSelectedIndexChanged" AutoPostBack="true" DataSourceID="SqlDataSourceAuthorType" >
+               
+                 </asp:DropDownList>
+                 
+                 <asp:ImageButton ID="MuNonMu" runat="server" ImageUrl="~/Images/srchImg.gif" CssClass="blnkImgCSS"  />
+
+               
+
+             </ItemTemplate>              
+        </asp:TemplateField>
+
+        <asp:TemplateField ShowHeader="true" HeaderText="Roll No/Employee Code">
+             <ItemTemplate>
+       <asp:TextBox ID="EmployeeCode" runat="server" Width="155" Visible="true"></asp:TextBox>
+        <asp:Image ID="ImageEmpCode" runat="server" ImageUrl="~/Images/srchImg.gif" CssClass="blnkImgCSS" />       
+            </ItemTemplate>            
+        </asp:TemplateField>
+
+        <asp:TemplateField HeaderText="Author Name">
+             <ItemTemplate>
+                 <asp:TextBox ID="AuthorName" runat="server" Width="200" Enabled="false"></asp:TextBox>
+
+                 <asp:Image ID="Image1" runat="server" ImageUrl="~/Images/srchImg.gif" CssClass="blnkImgCSS" />
+             </ItemTemplate>              
+        </asp:TemplateField>
+
+
+
+
+
+        
+
+
+
+        <asp:TemplateField HeaderText="Institution Name">
+         <ItemTemplate>
+             <asp:TextBox ID="InstitutionName" runat="server" Width="200" Enabled="false"></asp:TextBox> 
+             
+             <asp:Image ID="Image4" runat="server" ImageUrl="~/Images/srchImg.gif" CssClass="blnkImgCSS" />           
+             </ItemTemplate>              
+        </asp:TemplateField>
+
+                      
+       
+
+        <asp:TemplateField HeaderText="Department Name/Course">
+             <ItemTemplate>
+                 <asp:TextBox ID="DepartmentName" runat="server" Width="200" Enabled="false"></asp:TextBox>
+
+                 <asp:Image ID="Image5" runat="server" ImageUrl="~/Images/srchImg.gif" CssClass="blnkImgCSS" />
+            </ItemTemplate>            
+        </asp:TemplateField>
+
+           <asp:TemplateField HeaderText="MailId">
+             <ItemTemplate>
+                 <asp:TextBox ID="MailId" runat="server" Width="250" ></asp:TextBox>
+                 
+                 <asp:Image ID="ImageMailId" runat="server" ImageUrl="~/Images/srchImg.gif" CssClass="blnkImgCSS" />
+     
+
+             </ItemTemplate>              
+        </asp:TemplateField>
+
+ <asp:TemplateField HeaderText="isCorrAuth">
+             <ItemTemplate>
+                 <asp:DropDownList ID="isCorrAuth" runat="server" Width="70" >
+                 <asp:ListItem Value="Y">Yes</asp:ListItem>
+                        <asp:ListItem Value="N">No</asp:ListItem>
+                 </asp:DropDownList>
+
+                 <asp:Image ID="ImageisCorrAuth" runat="server" ImageUrl="~/Images/srchImg.gif" CssClass="blnkImgCSS" />
+
+                
+
+             </ItemTemplate>              
+        </asp:TemplateField>
+
+         <asp:TemplateField HeaderText="AuthorType">
+             <ItemTemplate>
+                 <asp:DropDownList ID="AuthorType" runat="server" Width="140" >
+                 <asp:ListItem Value="P">First Author</asp:ListItem>
+                        <asp:ListItem Value="C">CO-Author</asp:ListItem>
+                 </asp:DropDownList>
+
+                 <asp:Image ID="ImageisAuthorType" runat="server" ImageUrl="~/Images/srchImg.gif" CssClass="blnkImgCSS" />
+
+                
+
+             </ItemTemplate>              
+        </asp:TemplateField>
+
+          <asp:TemplateField HeaderText="NameAsInJournal">
+             <ItemTemplate>
+          <asp:TextBox ID="NameInJournal" runat="server" Width="160" ></asp:TextBox>
+
+                 
+                 <asp:Image ID="ImageNameInJournal" runat="server" ImageUrl="~/Images/srchImg.gif" CssClass="blnkImgCSS" />
+
+           
+
+                
+
+             </ItemTemplate>              
+        </asp:TemplateField>
+
+          <asp:TemplateField HeaderText="IsPresenter">
+             <ItemTemplate>
+          <asp:DropDownList ID="IsPresenter" runat="server" Width="75" OnSelectedIndexChanged="IsPresenterIsPresenter"  AutoPostBack="true">
+                 <asp:ListItem Value="N">No</asp:ListItem>
+                 <asp:ListItem Value="Y">Yes</asp:ListItem>
+                 
+                 </asp:DropDownList>
+                 
+                 <asp:Image ID="ImageIsPresenter" runat="server" ImageUrl="~/Images/srchImg.gif" CssClass="blnkImgCSS" />
+
+           
+
+                
+
+             </ItemTemplate>              
+        </asp:TemplateField>
+
+               <asp:TemplateField HeaderText="HasAttented">
+             <ItemTemplate>
+          <asp:CheckBox ID="HasAttented" runat="server" Width="70" ></asp:CheckBox>
+
+                 
+                 <asp:Image ID="ImageHasAttented" runat="server" ImageUrl="~/Images/srchImg.gif" CssClass="blnkImgCSS" />
+
+           
+
+                
+
+             </ItemTemplate>              
+        </asp:TemplateField>
+
+              
+         <asp:TemplateField  HeaderText="Colloboration">
+             <ItemTemplate>
+                 <asp:DropDownList ID="NationalType" runat="server" Width="140"  >
+                 <asp:ListItem Value="N">National</asp:ListItem>
+                        <asp:ListItem Value="I">International</asp:ListItem>
+                 </asp:DropDownList>
+
+                 <asp:Image ID="ImageisNationalType" runat="server" ImageUrl="~/Images/srchImg.gif" CssClass="blnkImgCSS" />
+
+                
+
+             </ItemTemplate>              
+        </asp:TemplateField>
+            <asp:TemplateField  HeaderText="Continent">
+             <ItemTemplate>
+                 <asp:DropDownList ID="ContinentId" runat="server" Width="140"   DataSourceID="SqlDataSourceDropdownContinentId" DataTextField="ContinentName" DataValueField="ContinentId" >
+     
+                 </asp:DropDownList>
+                       <asp:SqlDataSource ID="SqlDataSourceDropdownContinentId" runat="server" 
+                                         ConnectionString="<%$ ConnectionStrings:RMSConnectionString %>" 
+                                         ProviderName="System.Data.SqlClient" 
+                                         SelectCommand="select ContinentId,ContinentName  from Continent_M ">
+      
+                                     </asp:SqlDataSource>
+                 <asp:Image ID="ImageisContinent" runat="server" ImageUrl="~/Images/srchImg.gif" CssClass="blnkImgCSS" />
+
+                
+
+             </ItemTemplate>              
+        </asp:TemplateField>
+
+                        <asp:TemplateField ShowHeader="false">
+         <ItemTemplate>
+             <asp:HiddenField ID="Institution" runat="server" ></asp:HiddenField>               
+                          
+                 <asp:ImageButton ID="InstitutionBtn" runat="server"  ImageUrl="~/Images/srchImg.gif" CssClass="blnkImgCSS" />
+                  
+                     
+          </ItemTemplate>              
+        </asp:TemplateField>
+             <asp:TemplateField ShowHeader="false">
+             <ItemTemplate>
+                 <asp:HiddenField ID="Department" runat="server" ></asp:HiddenField>
+                                  
+                 <asp:ImageButton ID="DepartmentBtn" runat="server" Enabled="false" ImageUrl="~/Images/srchImg.gif"  CssClass="blnkImgCSS"  />
+
+             
+            </ItemTemplate>            
+        </asp:TemplateField>
+
+
+
+
+        </Columns>
+        <HeaderStyle BackColor="#0b532d" Font-Bold="True" ForeColor="White" />
+        <PagerStyle BackColor="#000000" ForeColor="#000000" HorizontalAlign="Center" />
+        <RowStyle BackColor="#FFFFFF" ForeColor="#333333" />
+        <SelectedRowStyle BackColor="#FFCC66" Font-Bold="True" ForeColor="Navy" />
+        <SortedAscendingCellStyle BackColor="#FDF5AC" />
+        <SortedAscendingHeaderStyle BackColor="#4D0000" />
+        <SortedDescendingCellStyle BackColor="#FCF6C0" />
+        <SortedDescendingHeaderStyle BackColor="#820000" />
+    </asp:GridView>
+
+
+</asp:Panel>
+</asp:Panel>
+
+
+<br />
+
+  
+  <asp:Panel ID="panelJournalArticle" runat="server" GroupingText="Journal Publish Details" Visible="false"  ForeColor="Black"  > 
+<%--  <center>
+  Journal Article
+  </center>--%>
+  <br />
+<table  style="width: 100%">
+ <tr>
+<%--  <td colspan="6" align="center">
+                          <asp:Label ID="LabelPubDetail" runat="server" Text="Publisher Details"  Font-Size="Medium" ></asp:Label>
+                               
+                               </td>--%>
+ </tr>
+                    <tr>
+                        <td style="height: 36px; font-weight:normal" >
+                          <asp:Label ID="LabelPubJournal" runat="server" Text="ISSN" ForeColor="Black" ></asp:Label>
+                               
+                               </td>
+                        <td style="height: 36px" >             
+                             <asp:TextBox ID="TextBoxPubJournal" runat="server"   Width="100px" OnTextChanged="JournalIDTextChanged"  AutoPostBack="true" Style="border-style:inset none none inset;"></asp:TextBox>
+     
+                       <asp:ImageButton ID="imageBkCbtn" runat="server" ImageUrl="~/Images/srchImg.gif" OnClientClick="setRow(this)" OnClick="showPop" />
+
+                 <asp:ModalPopupExtender ID="ModalPopupExtender1" runat="server" TargetControlID="imageBkCbtn" PopupControlID="popupPanelJournal"
+                    BackgroundCssClass="modelBackground"  >
+                 </asp:ModalPopupExtender>
+                       
+                         </td>
+                      
+                        <td style="height: 36px; font-weight:normal" >
+                           <asp:Label ID="LabelNameJournal" runat="server" Text="Name Of Journal" ForeColor="Black"  ></asp:Label>
+                        </td>
+                        <td style="height: 36px" >
+                             <asp:TextBox ID="TextBoxNameJournal" runat="server"  ReadOnly="true" Width="500px" Style="border-style:inset none none inset;"></asp:TextBox>
+         </td>
+
+               
+        <td style="height: 56px; font-weight:normal"> <asp:Label ID="LabelPubicationType" runat="server" Text="Publication Type" ForeColor="Black"  ></asp:Label></td> 
+     <td  >
+       <asp:DropDownList ID="DropDownListPubType" runat="server" Style="border-style:inset none none inset;" >
+       <asp:ListItem Value="N">National</asp:ListItem>
+        <asp:ListItem Value="I">International</asp:ListItem>
+       </asp:DropDownList>
+
+     </td>
+                           </tr>
+                       </table>
+
+                       <table >
+                           <tr>
+
+                           
+                                <td style="height: 56px; font-weight:normal" >
+                             <asp:Label ID="LabelMonthJA" runat="server" Text="Publish Month" ForeColor="Black"   ></asp:Label>
+                              <asp:DropDownList ID="DropDownListMonthJA" runat="server" Style="border-style:inset none none inset;"
+        >
+        <asp:ListItem Value="1">Jan</asp:ListItem>
+         <asp:ListItem Value="2">Feb</asp:ListItem>
+ <asp:ListItem Value="3">Mar</asp:ListItem>
+ <asp:ListItem Value="4">Apr</asp:ListItem>
+ <asp:ListItem Value="5">May</asp:ListItem>
+
+ <asp:ListItem Value="6">June</asp:ListItem>
+
+ <asp:ListItem Value="7">July</asp:ListItem>
+ <asp:ListItem Value="8">Aug</asp:ListItem>
+ <asp:ListItem Value="9">Sep</asp:ListItem>
+  <asp:ListItem Value="10">Oct</asp:ListItem>
+ <asp:ListItem Value="11">Nov</asp:ListItem>
+  <asp:ListItem Value="12">Dec</asp:ListItem>
+
+       
+        </asp:DropDownList>   
+        
+                        </td>
+                        <td style="height: 56px; font-weight:normal" >
+                     <asp:Label ID="LabelYearJA" runat="server" Text="Publish Year" ForeColor="Black"  ></asp:Label>
+                              <asp:TextBox ID="TextBoxYearJA" runat="server"
+        Width="80px"  Style="border-style:inset none none inset;" >
+        
+
+                                  
+
+        </asp:TextBox>  
+
+        
+           <asp:RegularExpressionValidator ID="RegularExpressionValidator1" runat="server" Display="None"  ControlToValidate="TextBoxYearJA" ValidationGroup="validation"
+                ErrorMessage="Entered Proper Year" SetFocusOnError="true"  
+                ValidationExpression="^[0-9]{4}$">
+                </asp:RegularExpressionValidator> 
+        
+                        </td>
+                <td style="height: 56px; font-weight:normal"> <asp:Label ID="LabelImpFact" runat="server" Text="1- Year Impact Factor" ForeColor="Black"  ></asp:Label></td> 
+     <td  >
+       <asp:TextBox ID="TextBoxImpFact" runat="server" Width="50px"  ReadOnly="true" Style="border-style:inset none none inset;" ></asp:TextBox>
+
+     </td>
+
+<td style="height: 56px; font-weight:normal"> <asp:Label ID="LabelImpFact5" runat="server" Text="5- Year Impact Factor" ForeColor="Black"  ></asp:Label></td> 
+     <td  >
+       <asp:TextBox ID="TextBoxImpFact5" runat="server"  ReadOnly="true" Style="border-style:inset none none inset;" Width="100px" ></asp:TextBox>
+
+     </td>
+
+
+
+  
+                          <td style="height: 56px; font-weight:normal"> <asp:Label ID="LblIFAY" runat="server" Text="IF-ApplicableYear" ForeColor="Black"  ></asp:Label></td> 
+     <td  >
+      <asp:TextBox ID="txtIFApplicableYear" runat="server"  ReadOnly="true" Style="border-style:inset none none inset;" Width="100px" ></asp:TextBox>
+     </td>
+     </tr>
+     </table>
+     <table>
+     <tr>
+            <td style="height: 36px; font-weight:normal">  
+                  <asp:Label ID="LabelPageFrom" runat="server" Text="Page From" ForeColor="Black"  ></asp:Label>
+                        </td>             
+         <td>
+      <asp:TextBox ID="TextBoxPageFrom" runat="server"  Width="50px" MaxLength="10" Style="border-style:inset none none inset;"></asp:TextBox> 
+   </td>
+     
+                                <td style="height: 36px; font-weight:normal">
+                    <asp:Label ID="LabelPageTo" runat="server" Text="Page To" ForeColor="Black"  ></asp:Label>
+                        </td>
+                        <td style="height: 36px" >
+                         <asp:TextBox ID="TextBoxPageTo" runat="server"   Width="50px" MaxLength="10" Style="border-style:inset none none inset;"></asp:TextBox>
+      
+            </td>
+             <td style="height: 36px; font-weight:normal">
+                                <asp:Label ID="LabelVolume" runat="server" Text="Volume" ForeColor="Black"  ></asp:Label></td>
+                        <td style="height: 36px">             
+                       <asp:TextBox ID="TextBoxVolume" runat="server"   Width="140px" Style="border-style:inset none none inset;"></asp:TextBox>
+     
+                       
+                         </td>
+     <td style="height: 36px; font-weight:normal">  <asp:Label ID="Labelissue" runat="server" Text="Issue" ForeColor="Black"  ></asp:Label>
+      </td>
+
+    <td  style="font-weight:normal" >  <asp:TextBox ID="TextBoxIssue" runat="server"   Width="100px" Style="border-style:inset none none inset;"></asp:TextBox></td>
+     <td style="height: 36px; font-weight:normal">
+                          <asp:Label ID="LabelDOINum" runat="server" Text="DOI Number" ForeColor="Black" ></asp:Label>
+                               
+                               </td>
+                        <td style="height: 36px">             
+                             <asp:TextBox ID="TextBoxDOINum" runat="server"   Width="200px" MaxLength="20" Style="border-style:inset none none inset;"></asp:TextBox>
+     
+                 
+                       
+                         </td>
+                          <td style="height: 36px; font-weight:normal"> <asp:Label ID="LabelIndexed" runat="server" Text="Indexed:" ForeColor="Black"  ></asp:Label></td>
+     <td style="font-weight:normal" >   <asp:RadioButtonList ID="RadioButtonListIndexed" runat="server"    RepeatDirection="Horizontal" OnSelectedIndexChanged="RadioButtonListIndexedOnSelectedIndexChanged" AutoPostBack="true" Style="border-style:inset none none inset;">
+                                        <asp:ListItem Value="N" Selected="True">No</asp:ListItem>
+                             <asp:ListItem Value="Y">Yes</asp:ListItem>
+                  
+ 
+                             </asp:RadioButtonList>  
+     
+     </td>   
+                       </tr>
+                       </table>
+                       <table>
+
+                           <tr>
+  
+   
+
+    
+     <td style="height: 36px; font-weight:normal">
+    
+
+     <asp:Label ID="LabelIndexedIn" runat="server" Text="Indexed In" ForeColor="Black"  ></asp:Label></td>
+     <td  style="font-weight:normal" >
+  <asp:CheckBoxList ID="CheckboxIndexAgency" runat="server" ForeColor="Black"  DataSourceID="SqlDataSourceCheckboxIndexAgency" RepeatDirection="Horizontal" DataTextField="agencyname" DataValueField="agencyid" Enabled="false">
+                
+                </asp:CheckBoxList>
+
+                
+<asp:SqlDataSource ID="SqlDataSourceCheckboxIndexAgency" runat="server" ConnectionString="<%$ ConnectionStrings:RMSConnectionString %>" 
+           SelectCommand="select agencyid,agencyname from IndexAgency_M where active='Y'">
+     
+                </asp:SqlDataSource>
+
+     </td>
+       <td style="height: 56px; font-weight:normal"> <asp:Label ID="lblCitation" runat="server" Text="Citation URL" ForeColor="Black"  ></asp:Label></td> 
+
+    <td  style="font-weight:normal" >  <asp:TextBox ID="txtCitation" runat="server" MaxLength="200"   Width="580px" Style="border-style:inset none none inset;"></asp:TextBox></td>         
+
+                  </tr>
+                  </table>
+
+   <asp:Panel ID="popupPanelJournal" runat="server" Visible="false" CssClass="modelPopup">
+
+<table style="background:white">
+
+<tr>
+<th align="center" colspan="2"> Journal</th>
+</tr>
+
+<tr>
+<th>Search Journal Name: </th>
+<td><asp:TextBox ID="journalcodeSrch" runat="server" ></asp:TextBox> </td>
+</tr> 
+<tr>
+<td colspan="2" align="center"> 
+<asp:Button ID="btnPopSearch" runat="server" Text="Search"  CausesValidation="false" />
+</td>
+</tr>
+     
+<tr>
+<td colspan="2">
+<asp:GridView ID="popGridJournal" runat="server"  AutoGenerateSelectButton="true"
+OnSelectedIndexChanged="popSelected" AllowSorting="true" EmptyDataText="No Records Found"  >
+<FooterStyle BackColor="#F7DFB5" ForeColor="#8C4510"  />
+        <HeaderStyle BackColor="#6386C6" Font-Bold="True" ForeColor="White" />
+        <PagerStyle ForeColor="#000000" HorizontalAlign="Center" />
+        <RowStyle BackColor="#FFFFFF" ForeColor="#000000" />
+        <SelectedRowStyle BackColor="#738A9C" Font-Bold="True" ForeColor="White" />
+        <SortedAscendingCellStyle BackColor="#FFF1D4" />
+        <SortedAscendingHeaderStyle BackColor="#B95C30" />
+        <SortedDescendingCellStyle BackColor="#F1E5CE" />
+        <SortedDescendingHeaderStyle BackColor="#93451F" />
+</asp:GridView>
+
+
+<asp:SqlDataSource ID="SqlDataSourceJournal" runat="server" ConnectionString="<%$ ConnectionStrings:RMSConnectionString %>" 
+           SelectCommand="SELECT top 10 Id,Title,AbbreviatedTitle FROM [Journal_M]">
+     
+                </asp:SqlDataSource>
+
+</td>
+</tr>
+</table>
+<asp:Button ID="Buttonexit" runat="server" Text="EXIT" />
+</asp:Panel>
+
+
+</asp:Panel>
+
+
+ <asp:Panel ID="panelConfPaper" runat="server" GroupingText=" Conference Paper" Visible="false" > 
+
+<%--  <center>
+  Conference Paper
+  </center>--%>
+  <br />
+ <table width="100%" >
+                    <tr>
+                        <td style="height: 36px; font-weight:normal">
+                          <asp:Label ID="LabelEventTitle" runat="server" Text="Conference Title" ></asp:Label>
+                               
+                               </td>
+                        <td style="height: 36px">             
+                             <asp:TextBox ID="TextBoxEventTitle" runat="server"   Width="700px" MaxLength="200" Style="border-style:inset none none inset;"></asp:TextBox>
+     
+                 
+                       
+                         </td>
+                      
+   
+                 <td style="height: 36px; font-weight:normal">
+                                <asp:Label ID="LabelDate" runat="server" Text="Conference Date" ></asp:Label></td>
+                        <td style="height: 36px">             
+                       <asp:TextBox ID="TextBoxDate" runat="server"   Width="130px" Style="border-style:inset none none inset;"></asp:TextBox>
+                     <asp:CalendarExtender ID="CalendarExtender2" runat="server"
+                TargetControlID="TextBoxDate" Format="dd/MM/yyyy" >
+            </asp:CalendarExtender>
+
+                 <asp:RegularExpressionValidator ID="RegularExpressionValidator15" runat="server" Display="None"  ControlToValidate="TextBoxDate" ValidationGroup="validation"
+                ErrorMessage="Presentation date in (dd/mm/yyyy) format" SetFocusOnError="true"  
+                ValidationExpression="^(((0[1-9]|[12]\d|3[01])\/(0[13578]|1[02])\/((19|[2-9]\d)\d{2}))|((0[1-9]|[12]\d|30)\/(0[13456789]|1[012])\/((19|[2-9]\d)\d{2}))|((0[1-9]|1\d|2[0-8])\/02\/((19|[2-9]\d)\d{2}))|(29\/02\/((1[6-9]|[2-9]\d)(0[48]|[2468][048]|[13579][26])|((16|[2468][048]|[3579][26])00))))$">
+                </asp:RegularExpressionValidator>
+                         </td>
+                           </tr>
+
+                           </table>
+
+                            <table width="100%" >
+                       
+                <tr>
+                                 <td style="height: 36px; font-weight:normal">
+                           <asp:Label ID="LabelISBN" runat="server" Text="ISBN" ></asp:Label>
+                        </td>
+                        <td style="height: 36px">
+                             <asp:TextBox ID="TextBoxIsbn" runat="server"  Width="450px" MaxLength="50" Style="border-style:inset none none inset;"></asp:TextBox>
+         </td>
+                
+                                     <td style="height: 36px; font-weight:normal">
+                           <asp:Label ID="LabelPlace" runat="server" Text="Conference Venue" ></asp:Label>
+                        </td>
+                        <td style="height: 36px" >
+                             <asp:TextBox ID="TextBoxPlace" runat="server"  Width="400px" MaxLength="50" Style="border-style:inset none none inset;"></asp:TextBox>
+         </td>
+
+                  
+
+                </tr>       
+                </table>
+
+                 <table width="100%">
+     
+        <tr>
+                        <td style="height: 36px; font-weight:normal">
+                          <asp:Label ID="Label2Presentation" runat="server" Text="Type Of Presentation" ></asp:Label>
+                               
+                               </td>
+                        <td style="height: 36px; font-weight:normal">             
+                             <asp:RadioButtonList ID="RadioButtonListTypePresentaion" runat="server"  RepeatDirection="Horizontal"  Style="border-style:inset none none inset;">
+                             <asp:ListItem Value="P">Poster</asp:ListItem>
+                                     <asp:ListItem Value="O">Oral  </asp:ListItem>
+                                     <asp:ListItem  Value="B">Both</asp:ListItem >
+                             </asp:RadioButtonList>
+     
+                 
+                       
+                         </td>
+                         <td>
+                         
+                         </td>
+                     
+      <td>
+                         
+                         </td>
+                               <td>
+                         
+                         </td>
+                               <td>
+                         
+                         </td>
+                               <td>
+                         
+                         </td>
+                               <td>
+                         
+                         </td>
+                               <td>
+                         
+                         </td>
+                               <td>
+                         
+
+                         </td>
+                               <td>
+                         
+                         </td>
+                           
+                    
+                     
+                      
+                        <td style="height: 36px; font-weight:normal">
+                           <asp:Label ID="Label3" runat="server" Text="Credit Point" ></asp:Label>
+                        </td>
+                        <td style="height: 36px">
+                             <asp:TextBox ID="TextBoxCreditPoint" runat="server"  Text="0" Style="border-style:inset none none inset;"></asp:TextBox>
+         </td>
+
+                 <td style="height: 36px; font-weight:normal">
+                                <asp:Label ID="Label4" runat="server" Text="Awarded By" ></asp:Label></td>
+                        <td style="height: 36px">             
+                       <asp:TextBox ID="TextBoxAwardedBy" runat="server" Enabled="false"   Width="400px" Style="border-style:inset none none inset;"></asp:TextBox>
+     
+                         </td>
+                           </tr>
+                       
+
+
+               
+                     </table>  
+  
+
+</asp:Panel>
+
+
+
+  <asp:Panel ID="panelBookPublish" runat="server" GroupingText="Book Publish" Visible="false"> 
+<%--  <center>
+  Book Publish
+  </center>--%>
+  <br />
+ <table  style="width: 100%">
+                    <tr>
+                        <td style="height: 36px; font-weight:normal">
+                          <asp:Label ID="LabelTitileBook" runat="server" Text="Title Of The Book" ></asp:Label>
+                               
+                               </td>
+                        <td style="height: 36px">             
+                             <asp:TextBox ID="TextBoxTitleBook" runat="server"  Width="920px" MaxLength="100" Style="border-style:inset none none inset;"></asp:TextBox>
+     
+                 
+                       
+                         </td>
+                      
+                    
+                           </tr>
+                       </table>
+
+                       <table width="100%">
+                        <tr>
+                      <td style="height: 36px; font-weight:normal">
+                           <asp:Label ID="LabelTitleChapterContributed" runat="server" Text="Title Of the Chapter Contributed" ></asp:Label>
+                        </td>
+                        <td style="height: 36px">
+                             <asp:TextBox ID="TextBoxChapterContributed" runat="server"   Width="500px" MaxLength="50" Style="border-style:inset none none inset;"></asp:TextBox>
+         </td>
+
+                 <td style="height: 36px; font-weight:normal">
+                                <asp:Label ID="LabelEdition" runat="server" Text="Edition" ></asp:Label></td>
+                        <td style="height: 36px">             
+                       <asp:TextBox ID="TextBoxEdition" runat="server"   Width="250px" MaxLength="50" Style="border-style:inset none none inset;"></asp:TextBox>
+     
+                       
+                         </td>
+                  </tr>
+                       
+                       </table>
+                       <table>
+                           <tr>
+
+                           
+                                <td style="height: 36px; font-weight:normal">
+                             <asp:Label ID="LabelPublisher" runat="server" Text="Publisher" ></asp:Label>
+                        </td>
+                        <td style="height: 36px">
+                     <asp:TextBox ID="TextBoxPublisher" runat="server" Style="border-style:inset none none inset;"
+        Width="400px" ></asp:TextBox>   
+        
+                        </td>
+             
+     
+      <td style="height: 36px; font-weight:normal">  
+                  <asp:Label ID="LabelYear" runat="server" Text="Year:" ></asp:Label>
+                        </td>
+                         
+         <td>
+      <asp:TextBox ID="TextBoxYear" runat="server"  Width="100px" Style="border-style:inset none none inset;"></asp:TextBox> 
+   </td>
+     <td style="height: 36px; font-weight:normal">  
+                  <asp:Label ID="LabelMonth" runat="server" Text="Month:" ></asp:Label>
+                        </td>
+                         
+         <td>
+
+
+                      <asp:DropDownList ID="DropDownListBookMonth" runat="server" Style="border-style:inset none none inset;"
+                             DataSourceID="SqlDataSourcePubBookMonth" DataTextField="MonthName" DataValueField="MonthValue" >
+
+                          </asp:DropDownList> 
+            <asp:SqlDataSource ID="SqlDataSourcePubBookMonth" runat="server" 
+                ConnectionString="<%$ ConnectionStrings:RMSConnectionString %>" 
+                
+                SelectCommand="select MonthValue, MonthName from Publication_MonthM" 
+                ProviderName="System.Data.SqlClient">
+             
+            </asp:SqlDataSource>
+   </td>
+
+     
+                                <td style="height: 36px; font-weight:normal">
+                    <asp:Label ID="Labelpagenum" runat="server" Text="Page Number" ></asp:Label>
+                        </td>
+                        <td style="height: 36px">
+                         <asp:TextBox ID="TextBoxPageNum" runat="server"   Width="80px" MaxLength="10" Style="border-style:inset none none inset;"></asp:TextBox>
+      
+            </td>
+  <td style="font-weight:normal"> <asp:Label ID="LabelVolume1" runat="server" Text="Volume"  ></asp:Label></td> 
+     <td  >
+  <asp:TextBox ID="TextBoxVolume1" runat="server"   Width="100px" Style="border-style:inset none none inset;"></asp:TextBox>
+       
+
+     </td>
+
+                       </tr>
+</table>
+
+  
+
+</asp:Panel>
+
+ <asp:Panel ID="panelOthes" runat="server" GroupingText="NewsPaper/Magazine" Visible="false" Font-Bold="true"> 
+
+ 
+ <table style="width: 100%">
+                    <tr>
+                        <td style="height: 36px">
+                          <asp:Label ID="LabelPublisherNewsPaper" runat="server" Text="Publisher:" Font-Bold="true"></asp:Label>
+                               
+                               </td>
+                        <td style="height: 36px">             
+                             <asp:TextBox ID="TextBoxPublish" runat="server"   Width="500px" ReadOnly="true"></asp:TextBox>
+     
+                 
+                       
+                         </td>
+                      
+                        <td style="height: 36px">
+                           <asp:Label ID="LabelDateOfPublish" runat="server" Text="Date Of Publish:" Font-Bold="true"></asp:Label>
+                        </td>
+                        <td style="height: 36px">
+                             <asp:TextBox ID="TextBoxDateOfPublish" runat="server"  Width="120px" ReadOnly="true"></asp:TextBox>
+         </td>
+
+                 <td style="height: 36px">
+                                <asp:Label ID="LabelPageNumNewsPaper" runat="server" Text="PageNum:" Font-Bold="true" ></asp:Label></td>
+                        <td style="height: 36px">             
+                       <asp:TextBox ID="TextBoxPageNumNewsPaper" runat="server"   Width="100px" ReadOnly="true"></asp:TextBox>
+     
+                       
+                         </td>
+                           </tr>
+                       
+                       
+     
+    
+
+
+               
+                     </table>  
+
+  
+
+</asp:Panel>
+<br />
+<br />
+
+  <asp:Panel ID="panelTechReport" runat="server" GroupingText="Generic Details" Visible="false" Font-Bold="true"> 
+
+
+ <table border="1" style="width: 100%">
+                    <tr>
+                        <td style="height: 36px">
+                             <asp:Label ID="LabelURL" runat="server" Text="Official URL:"  Font-Bold="true"></asp:Label>
+                        </td>
+                        <td style="height: 36px" colspan="3">
+                     <asp:TextBox ID="TextBoxURL" runat="server" ReadOnly="true"
+        Width="900px" ></asp:TextBox>   
+        
+                        </td>
+               <%--         <td style="height: 36px">
+                          <asp:Label ID="LabelDOINum" runat="server" Text="DOI Number:" Font-Bold="true"></asp:Label>
+                               
+                               </td>
+                        <td style="height: 36px">             
+                             <asp:TextBox ID="TextBoxDOINum" runat="server"   Width="200px" ReadOnly="true"></asp:TextBox>
+     
+                 
+                       
+                         </td>
+                      --%>
+                     
+
+               
+                           </tr>
+                       <tr>
+                         <td style="height: 36px">
+                                <asp:Label ID="LabelAbstract" runat="server" Text="Abstract:" Font-Bold="true" ></asp:Label></td>
+                        <td style="height: 36px" colspan="3" >             
+                       <asp:TextBox ID="TextBoxAbstract" runat="server"   Width="900px" TextMode="MultiLine" ReadOnly="true" ></asp:TextBox>
+     
+                       
+                         </td>
+
+                    
+                       </tr>
+                           <tr>
+
+                                    <td style="height: 36px">
+                           <asp:Label ID="LabelkeyWords" runat="server" Text="Keywords:" Font-Bold="true"></asp:Label>
+                        </td>
+                        <td style="height: 36px">
+                             <asp:TextBox ID="TextBoxKeywords" runat="server"   Width="400px" ReadOnly="true"></asp:TextBox>
+         </td>
+                         <td style="height: 36px">
+                    <asp:Label ID="LabelisErf" runat="server" Text="ERF Related?" Font-Bold="true"></asp:Label>
+                        </td>
+                        <td style="height: 36px">
+                         <asp:DropDownList ID="DropDownListErf" runat="server" Enabled="false" >
+                          <asp:ListItem Value="N">No</asp:ListItem>
+                         <asp:ListItem Value="Y">Yes</asp:ListItem>
+                          
+                         </asp:DropDownList>
+
+                           ( Environmental Research Fund )
+      
+            </td>
+                         <%--       <td style="height: 36px">
+                             <asp:Label ID="LabelReferences" runat="server" Text="References:"  Font-Bold="true"></asp:Label>
+                        </td>
+                        <td style="height: 36px">
+                     <asp:TextBox ID="TextBoxReference" runat="server" ReadOnly="true"
+        Width="400px" ></asp:TextBox>   
+        
+                        </td>--%>
+             </tr>
+                             <tr align="center">
+     
+     <td align="center" colspan="6">
+     <asp:Label ID="Eprint" runat="server" Text="EPrint" Font-Bold="true" ></asp:Label>
+     
+     </td>
+     
+     </tr>
+             <tr>
+     
+      <td style="height: 36px">  
+                  <asp:Label ID="LabelUploadPfd" runat="server" Text="View Pdf:" Font-Bold="true"></asp:Label>
+                        </td>
+                         
+         <td>
+
+        
+
+                       <asp:GridView ID="GVViewFile" runat="server" AutoGenerateColumns="False" 
+            DataSourceID="DSforgridview" onselectedindexchanged="GVViewFile_SelectedIndexChanged"
+            HeaderStyle-ForeColor="White" 
+         PagerStyle-ForeColor="White" CellPadding="3" 
+        CellSpacing="3" PagerStyle-Width="4" PagerStyle-Height="4" 
+      BorderStyle="Solid">
+            <Columns>
+                <asp:TemplateField ShowHeader="false">
+            <ItemTemplate>
+                <asp:ImageButton ID="btnView" runat="server" 
+                    CausesValidation="False" CommandName="Select"
+                    ImageUrl="~/Images/view.gif" ToolTip="View File" />
+            </ItemTemplate>
+          </asp:TemplateField>
+
+          <asp:TemplateField Visible="false">
+              <ItemTemplate>
+                  <asp:Label ID="lblgetid" runat="server" Text='<%# Eval("UploadPDFPath") %>' ></asp:Label>
+              </ItemTemplate>
+            </asp:TemplateField>
+              
+           
+            </Columns>
+        
+      
+        </asp:GridView>
+
+
+        <asp:SqlDataSource ID="DSforgridview" runat="server" 
+            ConnectionString="<%$ ConnectionStrings:RMSConnectionString %>" 
+            SelectCommand="  ">
+           
+        </asp:SqlDataSource>
+        <asp:Label ID="lblNoPDF" runat="server" Text="No PDF Found" Visible="false"></asp:Label>
+
+   </td>
+     
+                   <td style="height: 36px">
+                             <asp:Label ID="LabeluploadEPrint" runat="server" Text="upload To EPrint:"  Font-Bold="true"></asp:Label>
+                        </td>
+                        <td style="height: 36px">
+                     <asp:DropDownList ID="DropDownListuploadEPrint" runat="server" Enabled="false" 
+        Width="200px" >
+           <asp:ListItem Value="N">No</asp:ListItem>
+           <asp:ListItem Value="Y">Yes</asp:ListItem>
+                        
+        
+        </asp:DropDownList>   
+        
+                        </td>
+                       </tr>
+       
+                       <tr>
+                    
+                         <td style="height: 36px" >
+                             <asp:Label ID="Label1" runat="server" Text="EprintURL:"  Font-Bold="true"></asp:Label>
+                        </td>
+                        <td style="height: 36px" colspan="3">
+                     <asp:TextBox ID="TextBoxEprintURL" runat="server" ReadOnly="true"
+        Width="900px" ></asp:TextBox>   
+        
+                        </td>
+                         
+                       
+                       </tr>
+     
+     <tr>
+     
+                         <td style="height: 36px" >
+                             <asp:Label ID="LabelCanRemarks" runat="server" Text="Cancel Remarks:"  Font-Bold="true"></asp:Label>
+                        </td>
+                        <td style="height: 36px" colspan="3">
+                     <asp:TextBox ID="TextBoxCanRemarks" runat="server" ReadOnly="true" TextMode="MultiLine"
+        Width="900px" ></asp:TextBox>   
+        
+                        </td>
+     </tr>
+
+          <tr>
+     
+                         <td style="height: 36px" >
+                             <asp:Label ID="LabelRejRemarks" runat="server" Text="Rejected Remarks:"  Font-Bold="true"></asp:Label>
+                        </td>
+                        <td style="height: 36px" colspan="3">
+                     <asp:TextBox ID="TextBoxPubRejRemarks" runat="server" ReadOnly="true" TextMode="MultiLine"
+        Width="900px" ></asp:TextBox>   
+        
+                        </td>
+     </tr>
+           
+               
+               
+                     </table>  
+
+                     
+  
+
+</asp:Panel>
+
+
+
+
+
+
+
+
+
+
+<br />
+
+
+<br />
+</asp:Panel>
+
+
+</center>
+
+<asp:Panel ID="panelDescription" runat="server" GroupingText="Description" Visible="false" >
+<asp:Label ID="labelERFDes" runat="server">ERF :  Environmental Research Fund</asp:Label>
+
+</asp:Panel>
+
+<br />
+
+
+
+<asp:HiddenField ID="rowVal" runat="server" />
+    <asp:HiddenField ID="senderID" runat="server" />
+   
+</asp:Content>
+

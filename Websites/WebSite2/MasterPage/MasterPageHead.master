@@ -1,0 +1,124 @@
+﻿<%@ Master Language="C#" AutoEventWireup="true" CodeFile="MasterPageHead.master.cs" Inherits="MasterPage_MasterPageHead" %>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head runat="server" >
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>RMS</title>
+<meta name="keywords" content="" />
+<meta name="description" content="" />
+<link href="https://fonts.googleapis.com/css?family=Dosis:300,400,500,600,700" rel="stylesheet" type="text/css" />
+<link href="../Styles/Style.css" rel="stylesheet" type="text/css" media="all" />
+<!--[if IE 6]>
+<link href="default_ie6.css" rel="stylesheet" type="text/css" />
+<![endif]-->
+
+  <script type="text/javascript" language="javascript">
+      function DisableBackButton() {
+          window.history.forward()
+      }
+      DisableBackButton();
+      window.onload = DisableBackButton;
+      window.onpageshow = function (evt) { if (evt.persisted) DisableBackButton() }
+      window.onunload = function () { void (0) }
+ </script>
+
+</head>
+
+
+<body style="background:#E0EBAD;margin: 0px;padding: 0px;font-family: 'Times New Roman', sans-serif;font-size: 15px;color: #000000">
+
+
+	     <div id="HeaderBar" >
+
+    </div>
+<div id="wrapper">
+	<div id="header">
+              <div id="logo_head">
+          <asp:Image ID="Image2" runat="server" ImageUrl="~/Images/MAHE-logo.png" />
+              </div>
+              <div id="logo_text">
+                     <asp:Label ID="Title" runat="server" Text="Research Data Management System" ForeColor="Black" Font-Size="40px"></asp:Label>
+                </div>
+              
+       </div>
+
+
+     
+	<div id="page">
+		<div id="content">
+         	<asp:ContentPlaceHolder ID="ContentPlaceHolderhead" runat="server">
+        
+</asp:ContentPlaceHolder>
+		<%--	<h2>Research Management System</h2>--%>
+		<%--	
+            <asp:Image ID="img" ImageUrl="~/Images/journals.jpg" Width="550" Height="250" runat="server" />--%>
+			
+	<%--		<p>1.Provide easy access to research information in prescribed format on demand basis
+2.Maintain data integrity and correctness
+3.Research Data generation happens through following units of MU
+University Teaching Departments
+Centers of Excellence
+Research Centers
+Teaching Institutes
+4.The research data will be entered by the faculty with appropriate role
+Each entry will be approved by HOD
+In the institutes where HOD role is not applicable, HOI will be in charge of approval
+Only after approval of the research data by respective HOD/HOI, the newly entered data will be visible to Research Directorate
+
+
+</p>--%>
+		</div>
+		<div id="sidebar">
+			<div id="tbox1">
+		<%--     	<asp:ContentPlaceHolder ID="ContentPlaceHolderhead" runat="server">
+        
+</asp:ContentPlaceHolder>--%>
+			</div>
+           
+      <%--      	<div id="tbox3">
+                 <asp:Panel ID="panel" runat="server" GroupingText=" ">
+			<h2>Patent Data</h2>
+			<p>.All the filed patent details to be recorded
+.Inventor and Co-inventor details to be recorded
+.Follows the approval cycle – Entered patent data needs HOD or HOI approval
+ </p>
+	
+                  </asp:Panel>
+		<p>&nbsp;</p>
+
+			<ul class="style1">
+				<li class="first"><a href="#">Twitter</a></li>
+				<li><a href="#">Facebook</a></li>
+				<li><a href="#">Flickr</a></li>
+				<li><a href="#">Google +</a></li>
+			</ul>
+		</div>--%>
+  
+		</div>
+	</div>
+	<div id="three-column">
+	
+	</div>
+   
+
+	
+
+	<div id="footer">
+       	<table align="right">
+<tr>
+<td>Best Viewed on Google Chrome</td>
+</tr>
+</table>
+<br />
+<br />
+
+	        <p>Designed and Developed by SOIS and ISD, Manipal Academy of Higher Education<%-- <a href="http://www.manipal.edu/" target="_blank">@manipal.edu</a>--%> </p>	
+            </div>
+
+       
+</div>
+</body>
+</html>
+
